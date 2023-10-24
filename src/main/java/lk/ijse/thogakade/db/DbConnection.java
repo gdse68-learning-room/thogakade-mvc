@@ -1,4 +1,4 @@
-package lk.ijse.thogakade;
+package lk.ijse.thogakade.db;
 
 /*
     @author DanujaV

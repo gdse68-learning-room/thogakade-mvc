@@ -12,7 +12,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
-import lk.ijse.thogakade.DbConnection;
+import lk.ijse.thogakade.db.DbConnection;
+import lk.ijse.thogakade.model.CustomerModel;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -57,18 +58,9 @@ public class CustomerFormController {
         String address = txtAddress.getText();
         String tel = txtTel.getText();
 
+        var model = new CustomerModel();
         try {
-            Connection connection = DbConnection.getInstance().getConnection();
-
-            String sql = "INSERT INTO customer VALUES(?, ?, ?, ?)";
-            PreparedStatement pstm = connection.prepareStatement(sql);
-
-            pstm.setString(1, id);
-            pstm.setString(2, name);
-            pstm.setString(3, address);
-            pstm.setString(4, tel);
-
-            boolean isSaved = pstm.executeUpdate() > 0;
+            boolean isSaved = model.saveCustomer(id, name, address, tel);
             if (isSaved) {
                 new Alert(Alert.AlertType.CONFIRMATION, "customer saved!").show();
                 clearFields();
