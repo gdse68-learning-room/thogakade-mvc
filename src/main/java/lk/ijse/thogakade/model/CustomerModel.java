@@ -6,38 +6,39 @@ package lk.ijse.thogakade.model;
 */
 
 import lk.ijse.thogakade.db.DbConnection;
+import lk.ijse.thogakade.dto.CustomerDto;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class CustomerModel {
-    public boolean saveCustomer(String id, String name, String address, String tel) throws SQLException {
+    public boolean saveCustomer(final CustomerDto dto) throws SQLException {
         Connection connection = DbConnection.getInstance().getConnection();
 
         String sql = "INSERT INTO customer VALUES(?, ?, ?, ?)";
         PreparedStatement pstm = connection.prepareStatement(sql);
 
-        pstm.setString(1, id);
-        pstm.setString(2, name);
-        pstm.setString(3, address);
-        pstm.setString(4, tel);
+        pstm.setString(1, dto.getId());
+        pstm.setString(2, dto.getName());
+        pstm.setString(3, dto.getAddress());
+        pstm.setString(4, dto.getTel());
 
         boolean isSaved = pstm.executeUpdate() > 0;
 
         return isSaved;
     }
 
-    public boolean updateCustomer(String id, String name, String address, String tel) throws SQLException {
+    public boolean updateCustomer(final CustomerDto dto) throws SQLException {
         Connection connection = DbConnection.getInstance().getConnection();
 
         String sql = "UPDATE customer SET name = ?, address = ?, tel = ? WHERE id = ?";
         PreparedStatement pstm = connection.prepareStatement(sql);
 
-        pstm.setString(1, name);
-        pstm.setString(2, address);
-        pstm.setString(3, tel);
-        pstm.setString(4, id);
+        pstm.setString(1, dto.getName());
+        pstm.setString(2, dto.getAddress());
+        pstm.setString(3, dto.getTel());
+        pstm.setString(4, dto.getId());
 
         return pstm.executeUpdate() > 0;
     }

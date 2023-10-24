@@ -13,6 +13,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import lk.ijse.thogakade.db.DbConnection;
+import lk.ijse.thogakade.dto.CustomerDto;
 import lk.ijse.thogakade.model.CustomerModel;
 
 import java.sql.Connection;
@@ -58,9 +59,11 @@ public class CustomerFormController {
         String address = txtAddress.getText();
         String tel = txtTel.getText();
 
+        var dto = new CustomerDto(id, name, address, tel);
+
         var model = new CustomerModel();
         try {
-            boolean isSaved = model.saveCustomer(id, name, address, tel);
+            boolean isSaved = model.saveCustomer(dto);
             if (isSaved) {
                 new Alert(Alert.AlertType.CONFIRMATION, "customer saved!").show();
                 clearFields();
@@ -77,9 +80,11 @@ public class CustomerFormController {
         String address = txtAddress.getText();
         String tel = txtTel.getText();
 
+        var dto = new CustomerDto(id, name, address, tel);
+
         var model = new CustomerModel();
         try {
-            boolean isUpdated = model.updateCustomer(id, name, address, tel);
+            boolean isUpdated = model.updateCustomer(dto);
             System.out.println(isUpdated);
             if(isUpdated) {
                 new Alert(Alert.AlertType.CONFIRMATION, "customer updated!").show();
