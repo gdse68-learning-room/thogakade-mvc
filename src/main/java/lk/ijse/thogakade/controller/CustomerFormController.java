@@ -98,31 +98,25 @@ public class CustomerFormController {
     void txtSearchOnAction(ActionEvent event) {
         String id = txtId.getText();
 
+        var model = new CustomerModel();
         try {
-            Connection connection = DbConnection.getInstance().getConnection();
+            CustomerDto dto = model.searchCustomer(id);
 
-            String sql = "SELECT * FROM customer WHERE id = ?";
-            PreparedStatement pstm = connection.prepareStatement(sql);
-            pstm.setString(1, id);
-
-            ResultSet resultSet = pstm.executeQuery();
-
-            if(resultSet.next()) {
-                String cus_id = resultSet.getString(1);
-                String cus_name = resultSet.getString(2);
-                String cus_address = resultSet.getString(3);
-                String cus_tel = resultSet.getString(4);
-
-                txtId.setText(cus_id);
-                txtName.setText(cus_name);
-                txtAddress.setText(cus_address);
-                txtTel.setText(cus_tel);
-            } else  {
+            if(dto != null) {
+                fillFields(dto);
+            } else {
                 new Alert(Alert.AlertType.INFORMATION, "customer not found!").show();
             }
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
         }
+    }
+
+    private void fillFields(CustomerDto dto) {
+        txtId.setText(dto.getId());
+        txtName.setText(dto.getName());
+        txtAddress.setText(dto.getAddress());
+        txtTel.setText(dto.getTel());
     }
 
     @FXML
