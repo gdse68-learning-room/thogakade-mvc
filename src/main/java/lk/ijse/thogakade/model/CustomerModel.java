@@ -12,6 +12,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CustomerModel {
     public boolean saveCustomer(final CustomerDto dto) throws SQLException {
@@ -65,5 +67,27 @@ public class CustomerModel {
         }
 
         return dto;
+    }
+
+    public List<CustomerDto> getAllCustomers() throws SQLException {
+        Connection connection = DbConnection.getInstance().getConnection();
+
+        String sql = "SELECT * FROM customer";
+        PreparedStatement pstm = connection.prepareStatement(sql);
+
+        List<CustomerDto> dtoList = new ArrayList<>();
+
+        ResultSet resultSet = pstm.executeQuery();
+
+        while (resultSet.next()) {
+            String cus_id = resultSet.getString(1);
+            String cus_name = resultSet.getString(2);
+            String cus_address = resultSet.getString(3);
+            String cus_tel = resultSet.getString(4);
+
+            var dto = new CustomerDto(cus_id, cus_name, cus_address, cus_tel);
+            dtoList.add(dto);
+        }
+        return dtoList;
     }
 }
