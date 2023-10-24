@@ -16,6 +16,7 @@ import lk.ijse.thogakade.DbConnection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class CustomerFormController {
@@ -50,21 +51,6 @@ public class CustomerFormController {
     private TextField txtTel;
 
     @FXML
-    void btnBackOnAction(ActionEvent event) {
-
-    }
-
-    @FXML
-    void btnClearOnAction(ActionEvent event) {
-
-    }
-
-    @FXML
-    void btnDeleteOnAction(ActionEvent event) {
-
-    }
-
-    @FXML
     void btnSaveOnAction(ActionEvent event) {
         String id = txtId.getText();
         String name = txtName.getText();
@@ -83,8 +69,40 @@ public class CustomerFormController {
             pstm.setString(4, tel);
 
             boolean isSaved = pstm.executeUpdate() > 0;
-            if(isSaved) {
+            if (isSaved) {
                 new Alert(Alert.AlertType.CONFIRMATION, "customer saved!").show();
+                clearFields();
+            }
+        } catch (SQLException e) {
+            new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
+        }
+    }
+
+    @FXML
+    void txtSearchOnAction(ActionEvent event) {
+        String id = txtId.getText();
+
+        try {
+            Connection connection = DbConnection.getInstance().getConnection();
+
+            String sql = "SELECT * FROM customer WHERE id = ?";
+            PreparedStatement pstm = connection.prepareStatement(sql);
+            pstm.setString(1, id);
+
+            ResultSet resultSet = pstm.executeQuery();
+
+            if(resultSet.next()) {
+                String cus_id = resultSet.getString(1);
+                String cus_name = resultSet.getString(2);
+                String cus_address = resultSet.getString(3);
+                String cus_tel = resultSet.getString(4);
+
+                txtId.setText(cus_id);
+                txtName.setText(cus_name);
+                txtAddress.setText(cus_address);
+                txtTel.setText(cus_tel);
+            } else  {
+                new Alert(Alert.AlertType.INFORMATION, "customer not found!").show();
             }
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
@@ -97,8 +115,24 @@ public class CustomerFormController {
     }
 
     @FXML
-    void txtSearchOnAction(ActionEvent event) {
+    void btnDeleteOnAction(ActionEvent event) {
 
     }
 
+    @FXML
+    void btnClearOnAction(ActionEvent event) {
+       clearFields();
+    }
+
+    @FXML
+    void btnBackOnAction(ActionEvent event) {
+
+    }
+
+    void clearFields() {
+        txtId.setText("");
+        txtName.setText("");
+        txtAddress.setText("");
+        txtTel.setText("");
+    }
 }
