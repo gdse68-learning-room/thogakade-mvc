@@ -100,4 +100,23 @@ public class CustomerModel {
 
         return pstm.executeUpdate() > 0;
     }
+
+    public List<CustomerDto> loadAllCustomers() throws SQLException {
+        Connection connection = DbConnection.getInstance().getConnection();
+
+        String sql = "SELECT * FROM customer";
+        ResultSet resultSet = connection.prepareStatement(sql).executeQuery();
+
+        List<CustomerDto> cusList = new ArrayList<>();
+
+        while (resultSet.next()) {
+            cusList.add(new CustomerDto(
+                    resultSet.getString(1),
+                    resultSet.getString(2),
+                    resultSet.getString(3),
+                    resultSet.getString(4)
+            ));
+        }
+        return cusList;
+    }
 }

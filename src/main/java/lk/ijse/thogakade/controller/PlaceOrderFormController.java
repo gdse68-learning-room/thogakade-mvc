@@ -7,6 +7,8 @@ package lk.ijse.thogakade.controller;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -18,8 +20,14 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import lk.ijse.thogakade.dto.CustomerDto;
+import lk.ijse.thogakade.model.CustomerModel;
+import lk.ijse.thogakade.model.ItemModel;
 
 import java.io.IOException;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.List;
 
 public class PlaceOrderFormController {
     private JFXButton btnAddToCart;
@@ -77,6 +85,33 @@ public class PlaceOrderFormController {
     @FXML
     private Label lblNetTotal;
 
+    private final CustomerModel customerModel = new CustomerModel();
+    private final ItemModel itemModel = new ItemModel();
+
+    public void initialize() {
+        setDate();
+        loadCustomerIds();
+    }
+
+    private void loadCustomerIds() {
+        ObservableList<String> obList = FXCollections.observableArrayList();
+        try {
+            List<CustomerDto> cusList = customerModel.loadAllCustomers();
+
+            for(CustomerDto dto: cusList) {
+                obList.add(dto.getId());
+            }
+            cmbCustomerId.setItems(obList);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void setDate() {
+        String date = String.valueOf(LocalDate.now());
+        lblOrderDate.setText(date);
+    }
+
     @FXML
     void btnAddToCartOnAction(ActionEvent event) {
     }
@@ -91,8 +126,11 @@ public class PlaceOrderFormController {
     }
 
     @FXML
-    void cmbCustomerOnAction(ActionEvent event) {
+    void cmbCustomerOnAction(ActionEvent event) throws SQLException {
+        String id = cmbCustomerId.getValue();
+        CustomerDto dto = customerModel.searchCustomer(id);
 
+        lblCustomerName.setText(dto.getName());
     }
 
     @FXML
