@@ -32,65 +32,47 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class PlaceOrderFormController {
-    private JFXButton btnAddToCart;
-    @FXML
-    private JFXComboBox<String> cmbCustomerId;
-
-    @FXML
-    private JFXComboBox<String> cmbItemCode;
-
-    @FXML
-    private TableColumn<?, ?> colAction;
-
-    @FXML
-    private TableColumn<?, ?> colDescription;
-
-    @FXML
-    private TableColumn<?, ?> colItemCode;
-
-    @FXML
-    private TableColumn<?, ?> colQty;
-
-    @FXML
-    private TableColumn<?, ?> colTotal;
-
-    @FXML
-    private TableColumn<?, ?> colUnitPrice;
-
-    @FXML
-    private Label lblCustomerName;
-
-    @FXML
-    private Label lblDescription;
-
-    @FXML
-    private Label lblOrderDate;
-
-    @FXML
-    private Label lblOrderId;
-
-    @FXML
-    private Label lblQtyOnHand;
-
-    @FXML
-    private Label lblUnitPrice;
-
-    @FXML
-    private AnchorPane pane;
-
-    @FXML
-    private TableView<CartTm> tblOrderCart;
-
-    @FXML
-    private TextField txtQty;
-
-    @FXML
-    private Label lblNetTotal;
-
     private final CustomerModel customerModel = new CustomerModel();
     private final ItemModel itemModel = new ItemModel();
     private final OrderModel orderModel = new OrderModel();
     private final ObservableList<CartTm> obList = FXCollections.observableArrayList();
+    private JFXButton btnAddToCart;
+    @FXML
+    private JFXComboBox<String> cmbCustomerId;
+    @FXML
+    private JFXComboBox<String> cmbItemCode;
+    @FXML
+    private TableColumn<?, ?> colAction;
+    @FXML
+    private TableColumn<?, ?> colDescription;
+    @FXML
+    private TableColumn<?, ?> colItemCode;
+    @FXML
+    private TableColumn<?, ?> colQty;
+    @FXML
+    private TableColumn<?, ?> colTotal;
+    @FXML
+    private TableColumn<?, ?> colUnitPrice;
+    @FXML
+    private Label lblCustomerName;
+    @FXML
+    private Label lblDescription;
+    @FXML
+    private Label lblOrderDate;
+    @FXML
+    private Label lblOrderId;
+    @FXML
+    private Label lblQtyOnHand;
+    @FXML
+    private Label lblUnitPrice;
+    @FXML
+    private AnchorPane pane;
+    @FXML
+    private TableView<CartTm> tblOrderCart;
+    @FXML
+    private TextField txtQty;
+    @FXML
+    private Label lblNetTotal;
 
     public void initialize() {
         setCellValueFactory();
@@ -138,7 +120,7 @@ public class PlaceOrderFormController {
         try {
             List<CustomerDto> cusList = customerModel.loadAllCustomers();
 
-            for(CustomerDto dto: cusList) {
+            for (CustomerDto dto : cusList) {
                 obList.add(dto.getId());
             }
             cmbCustomerId.setItems(obList);
@@ -162,6 +144,20 @@ public class PlaceOrderFormController {
         Button btn = new Button("remove");
         btn.setCursor(Cursor.HAND);
 
+        for (int i = 0; i < tblOrderCart.getItems().size(); i++) {
+            if (code.equals(colItemCode.getCellData(i))) {
+                qty += (int) colQty.getCellData(i);
+                total = qty * unitPrice;
+
+                obList.get(i).setQty(qty);
+                obList.get(i).setTot(total);
+
+                tblOrderCart.refresh();
+                calculateNetTotal();
+                return;
+            }
+        }
+
         obList.add(new CartTm(
                 code,
                 description,
@@ -172,8 +168,17 @@ public class PlaceOrderFormController {
         ));
 
         tblOrderCart.setItems(obList);
+        calculateNetTotal();
         txtQty.clear();
+    }
 
+    private void calculateNetTotal() {
+        double total = 0;
+        for (int i = 0; i < tblOrderCart.getItems().size(); i++) {
+            total += (double) colTotal.getCellData(i);
+        }
+
+        lblNetTotal.setText(String.valueOf(total));
     }
 
     @FXML
