@@ -21,6 +21,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import lk.ijse.thogakade.dto.CustomerDto;
+import lk.ijse.thogakade.dto.ItemDto;
 import lk.ijse.thogakade.model.CustomerModel;
 import lk.ijse.thogakade.model.ItemModel;
 
@@ -91,6 +92,22 @@ public class PlaceOrderFormController {
     public void initialize() {
         setDate();
         loadCustomerIds();
+        loadItemCodes();
+    }
+
+    private void loadItemCodes() {
+        ObservableList<String> obList = FXCollections.observableArrayList();
+        try {
+            List<ItemDto> itemList = itemModel.loadAllItems();
+
+            for (ItemDto itemDto : itemList) {
+                obList.add(itemDto.getCode());
+            }
+
+            cmbItemCode.setItems(obList);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void loadCustomerIds() {
@@ -122,7 +139,17 @@ public class PlaceOrderFormController {
 
     @FXML
     void cmbItemOnAction(ActionEvent event) {
+        String code = cmbItemCode.getValue();
+        try {
+            ItemDto dto = itemModel.searchItem(code);
 
+            lblDescription.setText(dto.getDescription());
+            lblUnitPrice.setText(String.valueOf(dto.getUnitPrice()));
+            lblQtyOnHand.setText(String.valueOf(dto.getQtyOnHand()));
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @FXML
