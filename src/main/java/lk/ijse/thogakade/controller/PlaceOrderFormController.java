@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public class PlaceOrderFormController {
     private final CustomerModel customerModel = new CustomerModel();
@@ -143,6 +144,21 @@ public class PlaceOrderFormController {
         double total = qty * unitPrice;
         Button btn = new Button("remove");
         btn.setCursor(Cursor.HAND);
+
+        btn.setOnAction((e) -> {
+            ButtonType yes = new ButtonType("yes", ButtonBar.ButtonData.OK_DONE);
+            ButtonType no = new ButtonType("no", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+            Optional<ButtonType> type = new Alert(Alert.AlertType.INFORMATION, "Are you sure to remove?", yes, no).showAndWait();
+
+            if (type.orElse(no) == yes) {
+                int index = tblOrderCart.getSelectionModel().getSelectedIndex();
+                obList.remove(index);
+                tblOrderCart.refresh();
+
+                calculateNetTotal();
+            }
+        });
 
         for (int i = 0; i < tblOrderCart.getItems().size(); i++) {
             if (code.equals(colItemCode.getCellData(i))) {

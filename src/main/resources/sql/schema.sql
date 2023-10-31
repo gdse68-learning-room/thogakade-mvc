@@ -35,7 +35,3 @@ create table order_detail(
     constraint foreign key (item_code) references item(code)
     on delete cascade on update cascade
 );
-
-insert into order_detail (order_id, item_code, qty, unit_price)
-values ("O001", "I001", 2, 450),
-("O001", "I002", 5, 256);
