@@ -18,6 +18,5 @@ public class ItemTm {
     private String description;
     private int unitPrice;
     private int qtyOnHand;
-    private int x;
     private Button btn;
 }
