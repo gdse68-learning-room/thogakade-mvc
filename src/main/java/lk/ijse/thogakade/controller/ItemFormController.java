@@ -23,6 +23,7 @@ import lk.ijse.thogakade.model.ItemModel;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 public class ItemFormController {
     @FXML
@@ -62,6 +63,7 @@ public class ItemFormController {
     public void initialize() {
         setCellValueFactory();
         loadAllItems();
+        setListener();
     }
 
     private void setCellValueFactory() {
@@ -82,6 +84,23 @@ public class ItemFormController {
                 Button btn = new Button("remove");
                 btn.setCursor(Cursor.HAND);
 
+                btn.setOnAction((e) -> {
+                    ButtonType yes = new ButtonType("yes", ButtonBar.ButtonData.OK_DONE);
+                    ButtonType no = new ButtonType("no", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+                    Optional<ButtonType> type = new Alert(Alert.AlertType.INFORMATION, "Are you sure to remove?", yes, no).showAndWait();
+
+                    if(type.orElse(no) == yes) {
+                        int selectedIndex = tblItem.getSelectionModel().getSelectedIndex();
+                        String code = (String) colCode.getCellData(selectedIndex);
+
+                        deleteItem(code);   //delete item from the database
+
+                        obList.remove(selectedIndex);   //delete item from the JFX-Table
+                        tblItem.refresh();
+                    }
+                });
+
                 var tm = new ItemTm(
                         dto.getCode(),
                         dto.getDescription(),
@@ -94,6 +113,16 @@ public class ItemFormController {
             tblItem.setItems(obList);
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void deleteItem(String code) {
+        try {
+            boolean isDeleted = itemModel.deleteItem(code);
+            if(isDeleted)
+                new Alert(Alert.AlertType.CONFIRMATION, "item deleted!").show();
+        } catch (SQLException ex) {
+            new Alert(Alert.AlertType.ERROR, ex.getMessage()).show();
         }
     }
 
@@ -171,6 +200,19 @@ public class ItemFormController {
             new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
         }
 
+    }
+
+    private void setListener() {
+        tblItem.getSelectionModel().selectedItemProperty()
+                .addListener((observable, oldValue, newValue) -> {
+                    var dto = new ItemDto(
+                            newValue.getCode(),
+                            newValue.getDescription(),
+                            newValue.getUnitPrice(),
+                            newValue.getQtyOnHand()
+                    );
+                    setFields(dto);
+                });
     }
 
     private void setFields(ItemDto dto) {
