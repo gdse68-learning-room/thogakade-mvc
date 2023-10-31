@@ -21,14 +21,17 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import lk.ijse.thogakade.dto.CustomerDto;
 import lk.ijse.thogakade.dto.ItemDto;
+import lk.ijse.thogakade.dto.PlaceOrderDto;
 import lk.ijse.thogakade.dto.tm.CartTm;
 import lk.ijse.thogakade.model.CustomerModel;
 import lk.ijse.thogakade.model.ItemModel;
 import lk.ijse.thogakade.model.OrderModel;
+import lk.ijse.thogakade.model.PlaceOrderModel;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -74,6 +77,8 @@ public class PlaceOrderFormController {
     private TextField txtQty;
     @FXML
     private Label lblNetTotal;
+
+    private final PlaceOrderModel placeOrderModel = new PlaceOrderModel();
 
     public void initialize() {
         setCellValueFactory();
@@ -199,6 +204,32 @@ public class PlaceOrderFormController {
 
     @FXML
     void btnPlaceOrderOnAction(ActionEvent event) {
+        String orderId = lblOrderId.getText();
+        String cusId = cmbCustomerId.getValue();
+        LocalDate date = LocalDate.parse(lblOrderDate.getText());
+
+        List<CartTm> tmList = new ArrayList<>();
+
+        for (CartTm cartTm : obList) {
+            tmList.add(cartTm);
+        }
+
+        var placeOrderDto = new PlaceOrderDto(
+                orderId,
+                cusId,
+                date,
+                tmList
+        );
+
+        try {
+            boolean isSuccess = placeOrderModel.placeOrder(placeOrderDto);
+            if(isSuccess) {
+                new Alert(Alert.AlertType.CONFIRMATION, "order completed!").show();
+            }
+        } catch (SQLException e) {
+            new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
+        }
+
     }
 
     @FXML
