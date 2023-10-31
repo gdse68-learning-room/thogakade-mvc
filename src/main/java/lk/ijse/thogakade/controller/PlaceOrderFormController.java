@@ -24,6 +24,7 @@ import lk.ijse.thogakade.dto.CustomerDto;
 import lk.ijse.thogakade.dto.ItemDto;
 import lk.ijse.thogakade.model.CustomerModel;
 import lk.ijse.thogakade.model.ItemModel;
+import lk.ijse.thogakade.model.OrderModel;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -88,11 +89,22 @@ public class PlaceOrderFormController {
 
     private final CustomerModel customerModel = new CustomerModel();
     private final ItemModel itemModel = new ItemModel();
+    private final OrderModel orderModel = new OrderModel();
 
     public void initialize() {
+        generateNextOrderId();
         setDate();
         loadCustomerIds();
         loadItemCodes();
+    }
+
+    private void generateNextOrderId() {
+        try {
+            String orderId = orderModel.generateNextOrderId();
+            lblOrderId.setText(orderId);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void loadItemCodes() {
