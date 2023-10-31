@@ -12,6 +12,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ItemModel {
     public boolean saveItem(ItemDto itemDto) throws SQLException {
@@ -71,5 +73,29 @@ public class ItemModel {
         pstm.setString(1, code);
 
         return pstm.executeUpdate() > 0;
+    }
+
+    public List<ItemDto> loadAllItems() throws SQLException {
+        Connection connection = DbConnection.getInstance().getConnection();
+
+        String sql = "SELECT * FROM item";
+        PreparedStatement pstm = connection.prepareStatement(sql);
+
+        ResultSet resultSet = pstm.executeQuery();
+
+        List<ItemDto> dtoList = new ArrayList<>();
+
+        while (resultSet.next()) {
+            var dto = new ItemDto(
+                    resultSet.getString(1),
+                    resultSet.getString(2),
+                    resultSet.getDouble(3),
+                    resultSet.getInt(4)
+            );
+
+            dtoList.add(dto);
+        }
+
+        return dtoList;
     }
 }
