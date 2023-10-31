@@ -90,4 +90,14 @@ public class CustomerModel {
         }
         return dtoList;
     }
+
+    public boolean deleteCustomer(String id) throws SQLException {
+        Connection connection = DbConnection.getInstance().getConnection();
+
+        String sql = "DELETE FROM customer WHERE id = ?";
+        PreparedStatement pstm = connection.prepareStatement(sql);
+        pstm.setString(1, id);
+
+        return pstm.executeUpdate() > 0;
+    }
 }

@@ -163,7 +163,19 @@ public class CustomerFormController {
 
     @FXML
     void btnDeleteOnAction(ActionEvent event) {
+        String id = txtId.getText();
 
+        var customerModel = new CustomerModel();
+        try {
+            boolean isDeleted = customerModel.deleteCustomer(id);
+
+            if(isDeleted) {
+                tblCustomer.refresh();
+                new Alert(Alert.AlertType.CONFIRMATION, "customer deleted!").show();
+            }
+        } catch (SQLException e) {
+            new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
+        }
     }
 
     @FXML
