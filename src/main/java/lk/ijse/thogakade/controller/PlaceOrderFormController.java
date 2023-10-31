@@ -12,16 +12,16 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import lk.ijse.thogakade.dto.CustomerDto;
 import lk.ijse.thogakade.dto.ItemDto;
+import lk.ijse.thogakade.dto.tm.CartTm;
 import lk.ijse.thogakade.model.CustomerModel;
 import lk.ijse.thogakade.model.ItemModel;
 import lk.ijse.thogakade.model.OrderModel;
@@ -79,7 +79,7 @@ public class PlaceOrderFormController {
     private AnchorPane pane;
 
     @FXML
-    private TableView<?> tblOrderCart;
+    private TableView<CartTm> tblOrderCart;
 
     @FXML
     private TextField txtQty;
@@ -90,12 +90,23 @@ public class PlaceOrderFormController {
     private final CustomerModel customerModel = new CustomerModel();
     private final ItemModel itemModel = new ItemModel();
     private final OrderModel orderModel = new OrderModel();
+    private final ObservableList<CartTm> obList = FXCollections.observableArrayList();
 
     public void initialize() {
+        setCellValueFactory();
         generateNextOrderId();
         setDate();
         loadCustomerIds();
         loadItemCodes();
+    }
+
+    private void setCellValueFactory() {
+        colItemCode.setCellValueFactory(new PropertyValueFactory<>("code"));
+        colDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
+        colQty.setCellValueFactory(new PropertyValueFactory<>("qty"));
+        colUnitPrice.setCellValueFactory(new PropertyValueFactory<>("unitPrice"));
+        colTotal.setCellValueFactory(new PropertyValueFactory<>("tot"));
+        colAction.setCellValueFactory(new PropertyValueFactory<>("btn"));
     }
 
     private void generateNextOrderId() {
@@ -143,6 +154,26 @@ public class PlaceOrderFormController {
 
     @FXML
     void btnAddToCartOnAction(ActionEvent event) {
+        String code = cmbItemCode.getValue();
+        String description = lblDescription.getText();
+        int qty = Integer.parseInt(txtQty.getText());
+        double unitPrice = Double.parseDouble(lblUnitPrice.getText());
+        double total = qty * unitPrice;
+        Button btn = new Button("remove");
+        btn.setCursor(Cursor.HAND);
+
+        obList.add(new CartTm(
+                code,
+                description,
+                qty,
+                unitPrice,
+                total,
+                btn
+        ));
+
+        tblOrderCart.setItems(obList);
+        txtQty.clear();
+
     }
 
     @FXML
@@ -152,6 +183,9 @@ public class PlaceOrderFormController {
     @FXML
     void cmbItemOnAction(ActionEvent event) {
         String code = cmbItemCode.getValue();
+
+        txtQty.requestFocus();
+
         try {
             ItemDto dto = itemModel.searchItem(code);
 
@@ -174,6 +208,7 @@ public class PlaceOrderFormController {
 
     @FXML
     void txtQtyOnAction(ActionEvent event) {
+        btnAddToCartOnAction(event);
     }
 
     @FXML

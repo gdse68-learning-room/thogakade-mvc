@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 public class ItemTm {
     private String code;
     private String description;
-    private int unitPrice;
+    private double unitPrice;
     private int qtyOnHand;
     private Button btn;
 }
